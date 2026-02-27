@@ -24,6 +24,7 @@ public class RandomSet<T> {
         }
     }
 
+
     public RandomSet(){
         elements = (T[]) new Object[START_ELEMENTS_CAP];
         ht = (Struct<T>[]) new Struct[BIG_PRIME_NUMBER];
