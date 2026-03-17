@@ -4,7 +4,7 @@ public class StreamingMonitor {
     // impl your sync here
     private int totalWritersCount;
     private int writersEnded;
-    private int expectedWriterId;
+    private int expectedWriterIndex;
     private int ticksPerWriter;
     private int[] currWritersTicks;
 
@@ -12,23 +12,31 @@ public class StreamingMonitor {
         this.totalWritersCount = writersCount;
         this.currWritersTicks = new int[writersCount];
         this.ticksPerWriter = ticksPerWriter;
-        this.expectedWriterId = 0;
+        this.expectedWriterIndex = 0;
         this.writersEnded = 0;
     }
 
     public synchronized void startTick(int writerId) throws InterruptedException {
-        if (writerId != expectedWriterId){
+        var writerIndex = writerId - 1;
+
+        if (currWritersTicks[writerIndex] == ticksPerWriter){
+            return;
+        }
+
+        while (writerIndex != expectedWriterIndex){
             wait();
         }
     }
 
     public synchronized void endTick(int writerId){
-        currWritersTicks[writerId]++;
+        var writeIndex = writerId-1;
 
-        if (currWritersTicks[writerId] == ticksPerWriter){
+        currWritersTicks[writeIndex]++;
+
+        if (currWritersTicks[writeIndex] == ticksPerWriter){
             writersEnded++;
         }
-
+        expectedWriterIndex = (expectedWriterIndex + 1) % totalWritersCount;
         notifyAll();
     }
 
