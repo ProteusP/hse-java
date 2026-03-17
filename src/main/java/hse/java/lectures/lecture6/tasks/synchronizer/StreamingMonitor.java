@@ -45,4 +45,10 @@ public class StreamingMonitor {
             wait();
         }
     }
+
+    public boolean writerEnded(int writerId){
+        var writerIndex = writerId - 1;
+
+        return (currWritersTicks[writerIndex] == ticksPerWriter);
+    }
 }

@@ -33,6 +33,11 @@ public class StreamWriter implements Runnable {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+
+            if (monitor.writerEnded(id)){
+                break;
+            }
+
             output.print(message);
 
             monitor.endTick(id);
