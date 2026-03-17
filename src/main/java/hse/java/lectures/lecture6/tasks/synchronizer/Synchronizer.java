@@ -21,13 +21,21 @@ public class Synchronizer {
      * Starts infinite writer threads and waits until each writer prints exactly ticksPerWriter ticks
      * in strict ascending id order.
      */
-    public void execute() {
+    public void execute() throws InterruptedException {
         // add monitor and sync
+        StreamingMonitor monitor = new StreamingMonitor(tasks.size(), ticksPerWriter);
+
+        for (StreamWriter writer : tasks) {
+            writer.attachMonitor(monitor);
+        }
+
         for (StreamWriter writer : tasks) {
             Thread worker = new Thread(writer, "stream-writer-" + writer.getId());
             worker.setDaemon(true);
             worker.start();
         }
+
+        monitor.waitAllWriters();
     }
 
 }
